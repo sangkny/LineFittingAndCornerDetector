@@ -13,7 +13,7 @@ using namespace std;
 using namespace cv;
 using namespace lpdr;
 
-//#define CommandLine_Parameters
+#define CommandLine_Parameters
 
 #define _sk_Memory_Leakag_Detector
 #ifdef _sk_Memory_Leakag_Detector
