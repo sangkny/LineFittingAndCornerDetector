@@ -13,7 +13,7 @@ using namespace std;
 using namespace cv;
 using namespace lpdr;
 
-//#define CommandLine_Parameters
+#define CommandLine_Parameters
 
 #define _sk_Memory_Leakag_Detector
 #ifdef _sk_Memory_Leakag_Detector
@@ -35,7 +35,7 @@ void help(char **argv) {
   cout << "\n Fast Corner Detector "
     << "\nCall"
     << "\n" << argv[0] << " file_path [top(0)/bottom(1)] [left-region(x y width height)] [right-region(x y width height)]" 
-    << "\n\n (for example, CornerDetector_v100.exe C:/file_path/ 0 868 1230 300 300 2940 1230 300 300)"<<"\n"
+    << "\n\n (for example, CornerDetector_v102.exe C:/file_path/ 0 868 1230 300 300 2940 1230 300 300)"<<"\n"
 		<< "\n 'q', 'Q' or ESC to quit"
 		<< "\n" << endl;
 }
@@ -52,7 +52,7 @@ struct cornerParameters {
   bool debugGeneral = true;		// debugging options belows
   bool debugShowImages = true;       // show image files
   bool debugShowCornerImages = true; // shows corner image or not
-  bool debugShowImagesDetail = true; // can analyze the detail verson of code
+  bool debugShowImagesDetail = false; // can analyze the detail verson of code
 } corParam;
 // if you want to change the parameters, you can change the parameters as
 //struct cornerParameters corParam;
@@ -102,13 +102,15 @@ int main(int argc, char **argv) {
   /* office */
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/1-1/PASS/0004/0019/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/fail/top/";
-  folder_path = "D:/sangkny/software/projects/2dLineFitting/data/fail/bottom/";
+  //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/fail/bottom/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/error/bottom/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/bottom/";
   //folder_path = "D:/sangkny/software/Projects/2dLineFitting/data/1-1/PASS/0004/temp/";
   /* home */
-	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/0023/";
+	folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/0023/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/bottom/";
+	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/temp/";
+	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/top/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/temp/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/0023/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/";
@@ -134,17 +136,17 @@ int main(int argc, char **argv) {
   roiRects.push_back(Rect(lx, ly, lwidth, lheight));	// 0th  top-left
   roiRects.push_back(Rect(rx, ry, rwidth, rheight));  // 1st top-right
 #else  
-	//bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
-	////roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
-	//// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
-	//roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
-	//roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
+	bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
+	//roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
+	// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
+	roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
+	roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
   
-	bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
-	//roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
-	//roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
-	roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
-	roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
+	//bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
+	////roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
+	////roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
+	//roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
+	//roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
 
 #endif // CommandLine_Parameters
 	//Mat element = getStructuringElement(MORPH_RECT, cv::Size(3,5));	// (3,3) 
@@ -186,7 +188,12 @@ int main(int argc, char **argv) {
 				bRegion2 = true;
 			}
 			}
+			double tt1 = (double)cvGetTickCount();
 			Point cornerPt = findCorner(crop_gray, roiIdx, bRegion1, bRegion2, &corParam);
+			double tt2 = (double)cvGetTickCount();
+			double tt3 = (tt2 - tt1) / (double)getTickFrequency();
+			if(corParam.debugGeneral)
+				cout << "Single Corner Detection time >>> " << tt3 *1000. << "ms." << "\n";
 			if (cornerPt.x > 0 && cornerPt.y > 0)
 			cornerPts.push_back(cornerPt);			
 		}// roiIdx == 0 
@@ -293,7 +300,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(0, yRef), Point(binary.cols - 1, yRef), Scalar(0, 255, 255), 1, 8); // yellow
         line(tempImg, Point(xi, 0), Point(xi, binary.rows - 1), Scalar(0, 0, 255), 2, 8);		// red line
         imshow("Detected line (x,y) > 0 for vertical line searching", tempImg);
-        cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
+        //cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
         cvWaitKey(1);
       }
       if (binary.at<uchar>(max(0, min(binary.rows - 1, yRef - offsetFromCenter)), xi)>0 || binary.at<uchar>(yRef, xi) > 0 || binary.at<uchar>(max(0, min(binary.rows - 1, yRef + offsetFromCenter)), xi)>0) {
@@ -346,7 +353,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(xRef, 0), Point(xRef, binary.rows - 1), Scalar(0, 255, 255), 1, 8);
         line(tempImg, Point(0, yi), Point(binary.cols - 1, yi), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 for horizontal line in the top-left region", tempImg);
-        cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")" "-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
+        //cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")" "-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
         cvWaitKey(1);
       }
       if ((int)binary.at<uchar>(yi, xRef) > 0 || /*(int)binary.at<uchar>(yi, max(0, min(binary.cols -1, xRef- offsetFromCenter))) > 0 ||*/ (int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef + offsetFromCenter))) > 0) {
@@ -402,7 +409,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(0, yRef), Point(binary.cols - 1, yRef), Scalar(0, 255, 255), 1, 8);
         line(tempImg, Point(xi, 0), Point(xi, binary.rows - 1), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 to search a vertical line", tempImg);
-        cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
+        //cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
         cvWaitKey(1);
       }
       if (binary.at<uchar>(max(0, min(binary.rows - 1, yRef - offsetFromCenter)), xi) > 0 || binary.at<uchar>(yRef, xi) > 0 || binary.at<uchar>(max(0, min(binary.rows - 1, yRef + offsetFromCenter)), xi) > 0) {
@@ -455,7 +462,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(xRef, 0), Point(xRef, binary.rows - 1), Scalar(0, 255, 255), 1, 8);
         line(tempImg, Point(0, yi), Point(binary.cols - 1, yi), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 for horizontal line in the top-right region", tempImg);
-        cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
+        //cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
         cvWaitKey(1);
       }
       if ((int)binary.at<uchar>(yi, xRef) > 0 || (int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef - offsetFromCenter))) > 0 /*|| (int)binary.at<uchar>(yi,max(0, min(binary.cols-1,xRef+ offsetFromCenter))) > 0 */) {
@@ -509,7 +516,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
           cvtColor(tempImg, tempImg, CV_GRAY2BGR);
         line(tempImg, Point(xi, 0), Point(xi, binary.rows - 1), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 to search a vertical line", tempImg);
-        cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
+        //cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
         cvWaitKey(1);
       }
       if (binary.at<uchar>(max(0, min(binary.rows - 1, yRef - offsetFromCenter)), xi) > 0 || binary.at<uchar>(yRef, xi) > 0 || binary.at<uchar>(max(0, min(binary.rows - 1, yRef + offsetFromCenter)), xi) > 0) {
@@ -562,7 +569,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(xRef, 0), Point(xRef, binary.rows - 1), Scalar(0, 255, 255), 1, 8);
         line(tempImg, Point(0, yi), Point(binary.cols - 1, yi), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 in the Bottom-Left Region", tempImg);
-        cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
+        //cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
         cvWaitKey(1);
       }
       if ((int)binary.at<uchar>(yi, xRef) > 0 || /*(int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef - offsetFromCenter))) > 0 ||*/ (int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef + offsetFromCenter))) > 0) {
@@ -617,7 +624,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
           cvtColor(tempImg, tempImg, CV_GRAY2BGR);
         line(tempImg, Point(xi, 0), Point(xi, binary.rows - 1), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 to search a vertical line", tempImg);
-        cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
+        //cout << "Point (x,y) > 0 : (" << yRef << ", " << xi << ")" "-> value:" << to_string(binary.at<uchar>(yRef, xi)) << endl;
         cvWaitKey(1);
       }
       if (binary.at<uchar>(max(0, min(binary.rows - 1, yRef - offsetFromCenter)), xi) > 0 || binary.at<uchar>(yRef, xi) > 0 || binary.at<uchar>(max(0, min(binary.rows - 1, yRef + offsetFromCenter)), xi) > 0) {
@@ -671,7 +678,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
         line(tempImg, Point(xRef, 0), Point(xRef, binary.rows - 1), Scalar(0, 255, 255), 1, 8);
         line(tempImg, Point(0, yi), Point(binary.cols - 1, yi), Scalar(0, 0, 255), 2, 8);
         imshow("Detected line (x,y) > 0 in the Bottom-Right Region", tempImg);
-        cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
+        //cout << "Point (x,y) > 0 : (" << xRef << ", " << yi << ")-> value:" << to_string(binary.at<uchar>(yi, xRef)) << endl;
         cvWaitKey(1);
       }
       if ((int)binary.at<uchar>(yi, xRef) > 0 || (int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef - offsetFromCenter))) > 0 /*|| (int)binary.at<uchar>(yi, max(0, min(binary.cols - 1, xRef + offsetFromCenter))) > 0*/) {
