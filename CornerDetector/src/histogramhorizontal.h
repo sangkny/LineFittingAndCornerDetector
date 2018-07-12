@@ -1,10 +1,11 @@
 
 
-#ifndef OPENALPR_HISTOGRAMHORIZONTAL_H
-#define OPENALPR_HISTOGRAMHORIZONTAL_H
+#ifndef LPDR_HISTOGRAMHORIZONTAL_H
+#define LPDR_HISTOGRAMHORIZONTAL_H
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "histogram.h"
+
 
 namespace lpdr
 {
@@ -15,4 +16,4 @@ namespace lpdr
   };
 
 }
-#endif //OPENALPR_HISTOGRAMHORIZONTAL_H
+#endif //LPDR_HISTOGRAMHORIZONTAL_H

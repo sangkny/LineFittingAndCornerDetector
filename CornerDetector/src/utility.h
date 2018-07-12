@@ -16,9 +16,10 @@
 //#include "config.h"
 //#include "detector_types.h"
 
+
+
 namespace lpdr
 {
-
   class LineSegment
   {
 
@@ -104,7 +105,7 @@ namespace lpdr
   
   std::string &ltrim(std::string &s);
   std::string &rtrim(std::string &s);
-  std::string &trim(std::string &s);
+  std::string &trim(std::string &s); 
 }
 
-#endif // OPENLPDR_UTILITY_H
+#endif // LPDR_UTILITY_H

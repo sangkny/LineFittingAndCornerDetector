@@ -21,9 +21,6 @@
     <ClCompile Include="src\binarize_wolf.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="src\histogram.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="src\histogramhorizontal.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -31,6 +28,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="src\utility.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="src\histogram.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

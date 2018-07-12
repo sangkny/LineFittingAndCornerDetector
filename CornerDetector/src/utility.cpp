@@ -649,6 +649,5 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
 // trim from both ends
   std::string &trim(std::string &s) {
     return ltrim(rtrim(s));
-  }
-
+  }  
 }

@@ -15,4 +15,4 @@ namespace lpdr
   };
 }
   
-#endif // OPENALPR_VERTICALHISTOGRAM_H
+#endif // LPDR_VERTICALHISTOGRAM_H // by sangkny

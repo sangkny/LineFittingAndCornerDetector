@@ -3,7 +3,7 @@
 #define LPDR_HISTOGRAM_H
 
 #include "opencv2/imgproc/imgproc.hpp"
-#include "utility.h"
+//#include "utility.h"
 
 namespace lpdr
 {
