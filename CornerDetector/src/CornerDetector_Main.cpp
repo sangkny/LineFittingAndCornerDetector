@@ -13,7 +13,7 @@ using namespace std;
 using namespace cv;
 using namespace lpdr;
 
-#define CommandLine_Parameters
+//#define CommandLine_Parameters
 
 #define _sk_Memory_Leakag_Detector
 #ifdef _sk_Memory_Leakag_Detector
@@ -32,20 +32,20 @@ const int ESCAPE_KEY = 27;
 const std::string MAIN_WINDOW_NAME = "Corner Detector Main Window";
 
 void help(char **argv) {
-  cout << "\n Fast Corner Detector "
+  cout << "\n Fast Corner Detector by sangkny "
     << "\nCall"
     << "\n" << argv[0] << " file_path [top(0)/bottom(1)] [left-region(x y width height)] [right-region(x y width height)]" 
-    << "\n\n (for example, CornerDetector_v102.exe C:/file_path/ 0 868 1230 300 300 2940 1230 300 300)"<<"\n"
+    << "\n\n (for example, CornerDetector_v103.exe C:/file_path/ 0 868 1230 300 300 2940 1230 300 300)"<<"\n"
 		<< "\n 'q', 'Q' or ESC to quit"
 		<< "\n" << endl;
 }
 struct cornerParameters {
-  int min_distance_from_corner = 5;				// minimum distance from the corner point
-  int max_distance_from_corner = 100;     // maximum distanc from the cornper point
-  float corner_min_withheight_ratio = 0.95;
-  float corner_max_withheight_ratio = 2.5;
+  int min_distance_from_corner = 10;				// minimum distance from the corner point
+  int max_distance_from_corner = 150; //100			// maximum distanc from the cornper point
+  float corner_min_widthheight_ratio = 0.95;
+  float corner_max_widthheight_ratio = 2.75;
   float offsetPerc = 0.10;		// offset % point from the center 0.065
-  int adpthres_blockSize = 25;	// block size will determine the quality of the corner detection. + -> more edge but more robust edge but lost smooth changing edges
+  int adpthres_blockSize = 19; //25	// block size will determine the quality of the corner detection. + -> more edge but more robust edge but lost smooth changing edges
   double adpthres_C = 20;		// decreasing the value results in noisy and more detailed edge detection.
   bool disqualified = false;	// disqualified flag
   std::string reason = "";		// reason
@@ -107,10 +107,11 @@ int main(int argc, char **argv) {
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/bottom/";
   //folder_path = "D:/sangkny/software/Projects/2dLineFitting/data/1-1/PASS/0004/temp/";
   /* home */
-	folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/0023/";
+	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/0023/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/bottom/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/temp/";
-	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/top/";
+	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/bottom/";
+	folder_path = "D:/sangkny/work/software/2dLineFitting/data/error/more/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/temp/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/0023/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/";
@@ -136,17 +137,17 @@ int main(int argc, char **argv) {
   roiRects.push_back(Rect(lx, ly, lwidth, lheight));	// 0th  top-left
   roiRects.push_back(Rect(rx, ry, rwidth, rheight));  // 1st top-right
 #else  
-	bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
-	//roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
-	// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
-	roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
-	roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
+	//bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
+	////roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
+	//// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
+	//roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
+	//roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
   
-	//bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
-	////roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
-	////roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
-	//roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
-	//roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
+	bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
+	//roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
+	//roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
+	roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
+	roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
 
 #endif // CommandLine_Parameters
 	//Mat element = getStructuringElement(MORPH_RECT, cv::Size(3,5));	// (3,3) 
@@ -767,8 +768,8 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
   int sPtY = cornerPt.y; 
   int min_distance = conP->min_distance_from_corner;
   int max_distance = conP->max_distance_from_corner;
-  float corner_MaxWidthHeight_Ratio = conP->corner_max_withheight_ratio;
-  float corner_MinWidthHeight_Ratio = conP->corner_min_withheight_ratio;
+  float corner_MaxWidthHeight_Ratio = conP->corner_max_widthheight_ratio;
+  float corner_MinWidthHeight_Ratio = conP->corner_min_widthheight_ratio;
   if (hs_leftright == false && vs_topbottom == false) {       // Top-Left ROI Region 
     //horizontal and vertical distance computation by turns
     // x-> +, y -> +
@@ -809,7 +810,7 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist)))
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance /*&& (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
 
   }
@@ -852,7 +853,7 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist)))
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance /*&& (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
 
   }

@@ -39,4 +39,4 @@ namespace lpdr
   };
 
 }
-#endif //OPENLPDR_HISTOGRAM_H
+#endif //LPDR_HISTOGRAM_H
