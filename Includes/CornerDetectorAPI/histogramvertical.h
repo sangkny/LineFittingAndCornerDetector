@@ -4,7 +4,7 @@
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "histogram.h"
-#include "utility.h"
+//#include "utility.h"
 
 namespace lpdr
 {

@@ -1,4 +1,8 @@
-
+/* utility file header developed by sangkny
+// This file can not be distributed without permission
+// CopyRight 2018. Sangkeun Lee
+// Last updated on July 16th, 2018
+*/
 #ifndef LPDR_UTILITY_H
 #define LPDR_UTILITY_H
 
@@ -6,20 +10,36 @@
 #include <stdio.h>
 #include <string.h>
 
-//#include "constants.h"
-//#include "support/timing.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/core/core.hpp"
 #include "binarize_wolf.h"
 #include <vector>
-//#include "config.h"
-//#include "detector_types.h"
-
+#include "histogramhorizontal.h"
+#include "histogramvertical.h"
 
 
 namespace lpdr
 {
+  struct cornerParameters {
+    int min_distance_from_corner = 10;	
+    int max_distance_from_corner = 250; 
+    float corner_min_widthheight_ratio = 0.95;
+    float corner_max_widthheight_ratio = 2.75;
+    float offsetPerc = 0.10;		
+    int adpthres_blockSize = 19; 
+    double adpthres_C = 20;		
+    bool disqualified = false;	
+    std::string reason = "";		
+    bool debugTiming = true;
+    bool debugGeneral = true;		
+    bool debugGeneralDetails = false; 
+    bool debugShowImages = true;       
+    bool debugShowCornerImages = true; 
+    bool debugShowImagesDetail = false; 
+  };
+
+
   class LineSegment
   {
 
@@ -57,6 +77,25 @@ namespace lpdr
       }
 
   };
+
+  // sub function definition
+  /* this function returns a coner point from the given Grayscale ROI(region of interest) image.
+  roi_Gray  : grayscale roi image
+  roiIdx    : ROI Index for debugging
+  hs_leftright : horizontal searching direction for left (0) and right (1) directions from the center of Positive(Black)  Pole
+  vs_topbottom : vertical searching direction for top (0) and bottom (1) directions from the center of Positive (Black) Pole
+  *conP     : Parameter settings
+  --------------------------- hs/vs setting guide -> top2bottom and left2right direction
+  0. Top-Left Region      : false,  false;
+  1. TOP-Right Region     : true,   false;
+  2. Bottom-Right Region  : true,   true;
+  3. Bottom-Left Region   : false,  true;
+  */
+  cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_topbottom, cornerParameters * conP);
+
+  /*
+  */
+  bool verifyCornerPoint(cv::Mat &Binary, bool hs_leftright, bool vs_topbottom, lpdr::LineSegment &h_line, lpdr::LineSegment &v_line, cv::Point &cornerPt, cornerParameters * conP);
 
   double median(int array[], int arraySize);
 
