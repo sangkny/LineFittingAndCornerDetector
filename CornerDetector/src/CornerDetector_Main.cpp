@@ -13,7 +13,7 @@ using namespace std;
 using namespace cv;
 using namespace lpdr;
 
-//#define CommandLine_Parameters
+#define CommandLine_Parameters
 
 #define _sk_Memory_Leakag_Detector
 #ifdef _sk_Memory_Leakag_Detector
@@ -41,7 +41,7 @@ void help(char **argv) {
 }
 struct cornerParameters {
   int min_distance_from_corner = 10;				// minimum distance from the corner point
-  int max_distance_from_corner = 150; //100			// maximum distanc from the cornper point
+  int max_distance_from_corner = 250; //100			// maximum distance from the cornper point, it affects the effectiveness of sheet's rotation, more the better.
   float corner_min_widthheight_ratio = 0.95;
   float corner_max_widthheight_ratio = 2.75;
   float offsetPerc = 0.10;		// offset % point from the center 0.065
@@ -49,10 +49,12 @@ struct cornerParameters {
   double adpthres_C = 20;		// decreasing the value results in noisy and more detailed edge detection.
   bool disqualified = false;	// disqualified flag
   std::string reason = "";		// reason
+  bool debugTiming = true;
   bool debugGeneral = true;		// debugging options belows
+  bool debugGeneralDetails = false; // General debugging Infor in Detail
   bool debugShowImages = true;       // show image files
   bool debugShowCornerImages = true; // shows corner image or not
-  bool debugShowImagesDetail = false; // can analyze the detail verson of code
+  bool debugShowImagesDetail = false; // can analyze the detail verson of code with images
 } corParam;
 // if you want to change the parameters, you can change the parameters as
 //struct cornerParameters corParam;
@@ -100,7 +102,7 @@ int main(int argc, char **argv) {
 	folder_path = argv[1];
 #else
   /* office */
-  //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/1-1/PASS/0004/0019/";
+  folder_path = "D:/sangkny/software/projects/2dLineFitting/data/1-1/PASS/0004/0022/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/fail/top/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/fail/bottom/";
   //folder_path = "D:/sangkny/software/projects/2dLineFitting/data/error/bottom/";
@@ -111,7 +113,7 @@ int main(int argc, char **argv) {
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/bottom/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/temp/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/bottom/";
-	folder_path = "D:/sangkny/work/software/2dLineFitting/data/error/more/";
+	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/error/more/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/1-1/PASS/0004/temp/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/0023/";
 	//folder_path = "D:/sangkny/work/software/2dLineFitting/data/fail/";
@@ -137,17 +139,17 @@ int main(int argc, char **argv) {
   roiRects.push_back(Rect(lx, ly, lwidth, lheight));	// 0th  top-left
   roiRects.push_back(Rect(rx, ry, rwidth, rheight));  // 1st top-right
 #else  
-	//bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
-	////roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
-	//// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
-	//roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
-	//roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
+	bool bTopBottomPlate = false;  // top Plate = false, bottom Plate = true;
+	//roiRects.push_back(Rect(868, 1230, 300, 300));	// 0th  top-left
+	// roiRects.push_back(Rect(2940, 1230, 300, 300)); // 1st top-right  
+	roiRects.push_back(Rect(590, 952, 700, 700));	// 0th  top-left	
+	roiRects.push_back(Rect(2772, 952, 700, 700)); // 1st top-right  
   
-	bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
-	//roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
-	//roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
-	roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
-	roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
+	//bool bTopBottomPlate = true;  // top Plate = false, bottom Plate = true;
+	////roiRects.push_back(Rect(846, 1412, 300, 300));  // 2nd bottom-left
+	////roiRects.push_back(Rect(2950, 1412, 300, 300)); // bottom-right	
+	//roiRects.push_back(Rect(548, 1366, 700, 700));  // 2nd bottom-left
+	//roiRects.push_back(Rect(2724, 1366, 700, 700)); // bottom-right	
 
 #endif // CommandLine_Parameters
 	//Mat element = getStructuringElement(MORPH_RECT, cv::Size(3,5));	// (3,3) 
@@ -193,10 +195,10 @@ int main(int argc, char **argv) {
 			Point cornerPt = findCorner(crop_gray, roiIdx, bRegion1, bRegion2, &corParam);
 			double tt2 = (double)cvGetTickCount();
 			double tt3 = (tt2 - tt1) / (double)getTickFrequency();
-			if(corParam.debugGeneral)
+			if(corParam.debugGeneral && corParam.debugTiming)
 				cout << "Single Corner Detection time >>> " << tt3 *1000. << "ms." << "\n";
 			if (cornerPt.x > 0 && cornerPt.y > 0)
-			cornerPts.push_back(cornerPt);			
+			  cornerPts.push_back(cornerPt);			
 		}// roiIdx == 0 
 		// process ends
 		// print the processing time and file name
@@ -257,7 +259,7 @@ cv::Point findCorner(cv::Mat roi_Gray, int roiIdx, bool hs_leftright, bool vs_to
   int adaptiveThreshold_blockSize = conP->adpthres_blockSize;
   double adaptiveThreshold_C = conP->adpthres_C;
   /*
-  // block 싸이즈를 키우면 강한 에지만를 잡을 수 있지만 놓치는 에지가 생길 수 있다. 하지만, 잡음은 없앨 수 있다.
+  // block 싸이즈를 키우면 강한 에지만을 잡을 수 있지만 놓치는 에지가 생길 수 있다. 하지만, 잡음은 없앨 수 있다.
   // threshold C (mean에서 빼주는 값)를 높이면 threshold 가 낮아지는 효과가 나기 때문에 잡음이 많고 세세한 부분까지 잡을 수 있음.
   // 마지막 term인 C를 많이 낮추면 opening을 해야 하는 수가 생김..
   // 300x300 의 경우는 25, 30 이 좋은 효과가 있음.
@@ -779,8 +781,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
         break;
       }
     }
-    if (x_dist_Idx == -1)
+    if (x_dist_Idx == -1) {
+      if (conP->debugGeneral && conP->debugGeneralDetails)
+        cout << "TL-Region, x_dist_Idx is failed. Please increase the max_distance_from_corner parameter to give it more flexibility!!" << endl;
       return false;
+    }
     for (int yi = sPtY; yi <= min(Binary.rows - 1, sPtY + max_distance); yi++) {
       if (Binary.at<uchar>(yi, sPtX) > 0) {
         y_dist_Idx = yi;
@@ -789,7 +794,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist)))
+    if (conP->debugGeneral && conP->debugGeneralDetails) { // debugging
+      cout << "TL-Region:" << endl;
+      cout<<"(x_dist_Idx, y_dist_Idx, h_dist, v_dist)-- > ("<<x_dist_Idx<<", " << y_dist_Idx << ", " << h_dist << ", " << v_dist << ")" << endl;
+    }
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) /*&& (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
   }
   else if (hs_leftright == true && vs_topbottom == false) {    // Top-Right ROI Region  
@@ -800,8 +809,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
         break;
       }
     }
-    if (x_dist_Idx == -1)
+    if (x_dist_Idx == -1) {
+      if (conP->debugGeneral && conP->debugGeneralDetails)
+        cout << "TR-Region, x_dist_Idx is failed. Please increase the max_distance_from_corner parameter to give it more flexibility!!" << endl;
       return false;
+    }
     for (int yi = sPtY; yi <= min(Binary.rows - 1, sPtY + max_distance); yi++) {
       if (Binary.at<uchar>(yi, sPtX) > 0) {
         y_dist_Idx = yi;
@@ -810,7 +822,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance /*&& (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
+    if (conP->debugGeneral && conP->debugGeneralDetails) { // debugging
+      cout << "TR-Region:" << endl;
+      cout<< "(x_dist_Idx, y_dist_Idx, h_dist, v_dist)-- > (" << x_dist_Idx << ", " << y_dist_Idx << ", " << h_dist << ", " << v_dist << ")" << endl;
+    }
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) /*&& (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
 
   }
@@ -822,8 +838,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
         break;
       }
     }
-    if (x_dist_Idx == -1)
+    if (x_dist_Idx == -1) {
+      if (conP->debugGeneral && conP->debugGeneralDetails)
+        cout << "BL-Region, x_dist_Idx is failed. Please increase the max_distance_from_corner parameter to give it more flexibility!!" << endl;
       return false;
+    }
     for (int yi = sPtY; yi >= max(0, sPtY - max_distance); yi--) {
       if (Binary.at<uchar>(yi, sPtX) > 0) {
         y_dist_Idx = yi;
@@ -832,7 +851,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist)))
+    if (conP->debugGeneral && conP->debugGeneralDetails) { // debugging
+      cout << "BL-Region:" << endl;
+      cout<<"(x_dist_Idx, y_dist_Idx, h_dist, v_dist) -->(" << x_dist_Idx << ", " << y_dist_Idx << ", " << h_dist << ", " << v_dist << ")" << endl;
+    }
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) /*&& (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
   }
   else if (hs_leftright == true && vs_topbottom == true){     // Bottom-Right ROI region
@@ -843,8 +866,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
         break;
       }
     }
-    if (x_dist_Idx == -1)
+    if (x_dist_Idx == -1) {
+      if (conP->debugGeneral && conP->debugGeneralDetails)
+        cout << "BR-Region, x_dist_Idx is failed. Please increase the max_distance_from_corner parameter to give it more flexibility!!" << endl;
       return false;
+    }
     for (int yi = sPtY; yi >= max(0, sPtY - max_distance); yi--) {
       if (Binary.at<uchar>(yi, sPtX) > 0) {
         y_dist_Idx = yi;
@@ -853,7 +879,11 @@ bool verifyCornerPoint(Mat &Binary, bool hs_leftright, bool vs_topbottom, LineSe
     }
     h_dist = abs(x_dist_Idx - sPtX);
     v_dist = abs(y_dist_Idx - sPtY);
-    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance /*&& (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) && (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
+    if (conP->debugGeneral && conP->debugGeneralDetails) { // debugging
+      cout << "BR-Region:" << endl;
+      cout<< "(x_dist_Idx, y_dist_Idx, h_dist, v_dist)-- > (" << x_dist_Idx << ", " << y_dist_Idx << ", " << h_dist << ", " << v_dist << ")" << endl;
+    }
+    if (y_dist_Idx != -1 && h_dist >= min_distance && v_dist >= min_distance && (h_dist >= (int)(corner_MinWidthHeight_Ratio*(float)v_dist)) /*&& (h_dist < (int)(corner_MaxWidthHeight_Ratio*(float)v_dist))*/)
       return true;
 
   }
