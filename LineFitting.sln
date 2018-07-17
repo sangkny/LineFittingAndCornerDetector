@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LineFitting", "LineFitting\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CornerDetector", "CornerDetector\CornerDetector.vcxproj", "{0EE6DBF9-6826-4D17-9EFA-F169137D114A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CornerDetectorAPI", "CornerDetectorAPI\CornerDetectorAPI.vcxproj", "{78806FED-5694-4FBF-87DC-9B43E54475FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{0EE6DBF9-6826-4D17-9EFA-F169137D114A}.Release|x64.Build.0 = Release|x64
 		{0EE6DBF9-6826-4D17-9EFA-F169137D114A}.Release|x86.ActiveCfg = Release|Win32
 		{0EE6DBF9-6826-4D17-9EFA-F169137D114A}.Release|x86.Build.0 = Release|Win32
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Debug|x64.ActiveCfg = Debug|x64
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Debug|x64.Build.0 = Debug|x64
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Debug|x86.ActiveCfg = Debug|Win32
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Debug|x86.Build.0 = Debug|Win32
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Release|x64.ActiveCfg = Release|x64
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Release|x64.Build.0 = Release|x64
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Release|x86.ActiveCfg = Release|Win32
+		{78806FED-5694-4FBF-87DC-9B43E54475FA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
