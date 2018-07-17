@@ -678,7 +678,7 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
     waitKey(1);
     }*/
     assert(roi_Gray.type() == CV_8UC1); // one channel unsigned char
-    bool unpaidFull = true;
+    bool unpaidFull = false;
     Mat binary, temp;
     LineSegment lineHor, lineVer;       // horizontal and vertical lines
     Point FinalCornerPoint(0, 0);        // a final corner point
